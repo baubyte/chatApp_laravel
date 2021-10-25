@@ -1,0 +1,6 @@
+#!/bin/bash
+
+args="$@"
+command="php artisan $args"
+echo "$command"
+docker exec -it chatlaravel-web bash -c "sudo -u devbaubyte /bin/bash -c \"$command\""
