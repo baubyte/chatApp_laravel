@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Chat;
+use App\Models\Message;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -44,8 +45,23 @@ class User extends Authenticatable
     ];
 
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function chats()
     {
         return $this->belongsToMany(Chat::class);
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
     }
 }

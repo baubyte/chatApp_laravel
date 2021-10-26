@@ -15,6 +15,10 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
+            $table->text('content');
+            //FK
+            $table->foreignId('user_id');
+            $table->foreignId('chat_id');
             $table->timestamps();
         });
     }
