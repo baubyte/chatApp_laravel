@@ -26,8 +26,8 @@
 			</header>
 			<div class="msger-chat"></div>
 			<form class="msger-inputarea">
-				<input type="text" class="msger-input" oninput="sendTypingEvent()" placeholder="Enter your message...">
-				<button type="submit" class="msger-send-btn">Send</button>
+				<input type="text" class="msger-input" oninput="sendTypingEvent()" placeholder="Escribe un mensaje...">
+				<button type="submit" class="msger-send-btn">Enviar</button>
 			</form>
 		</section>
 		<script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
