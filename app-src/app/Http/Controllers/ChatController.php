@@ -71,4 +71,37 @@ class ChatController extends Controller
 
 	}
 
+    /**
+     * Obtiene el usuario de la sala con
+     * la que estamos chateando
+     *
+     * @param Chat $chat
+     * @return void
+     */
+    public function get_users(Chat $chat)
+    {
+        //Obtenemos el usuario del chat
+       $users = $chat->users;
+       return response()->json([
+            'users' => $users
+       ]);
+    }
+
+    /**
+     * Obtiene los mensajes del 
+     * chat
+     *
+     * @param Chat $chat
+     * @return void
+     */
+    public function get_messages(Chat $chat)
+    {
+        //Obtenemos los mensajes
+       $messages = $chat->messages()->with('user')->get();
+       return response()->json([
+            'messages' => $messages
+       ]);
+    }
+
+
 }

@@ -28,6 +28,7 @@
 			<form class="msger-inputarea">
 				<input type="text" class="msger-input" oninput="sendTypingEvent()" placeholder="Escribe un mensaje...">
 				<button type="submit" class="msger-send-btn">Enviar</button>
+				<input type="hidden" name="chatId" value="{{$chat->id}}" id="chatId">
 			</form>
 		</section>
 		<script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>

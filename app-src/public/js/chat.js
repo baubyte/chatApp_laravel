@@ -6,7 +6,8 @@ const PERSON_IMG = "https://image.flaticon.com/icons/svg/145/145867.svg";
 const chatWith = get(".chatWith");
 const typing = get(".typing");
 const chatStatus = get(".chatStatus");
-const chatId = window.location.pathname.substr(6);
+//const chatId = window.location.pathname.substr(6);
+const chatId  = document.getElementById("chatId").value;
 let authUser;
 let typingTimer = false;
 
@@ -26,17 +27,15 @@ window.onload = function () {
     axios.get(`/chat/${chatId}/get_users`).then( res => {
 
       let results = res.data.users.filter( user => user.id != authUser.id);
-
       if(results.length > 0)
         chatWith.innerHTML = results[0].name;
-
     });
 
   })
   .then(() => {
 
     axios.get(`/chat/${chatId}/get_messages`).then(res => {
-
+      //agregamos los mensajes
       appendMessages(res.data.messages);
 
     });
@@ -44,53 +43,69 @@ window.onload = function () {
   })
   .then(() => {
 
+    //Echo
     Echo.join(`chat.${chatId}`)
-      .listen('MessageSent', (e) => {
+      .listen('MessageSent', (event) => {
 
         appendMessage(
-          e.message.user.name,
+          event.message.user.name,
           PERSON_IMG,
           'left',
-          e.message.content,
-          formatDate(new Date(e.message.created_at))
+          event.message.content,
+          formatDate(new Date(event.message.created_at))
         );
 
       })
+      //usuarios conectados en el canal
       .here(users => {
-
+        //todos los usuarios menos el identificado
         let result = users.filter(user => user.id != authUser.id);
 
-          if(result.length > 0)
+          //si hay resultado
+          if(result.length > 0){
+            //esta conectado entonces el cambiamos la clase
             chatStatus.className = 'chatStatus online';
+          }
 
       })
+      //cuando un usuario se une al canal
       .joining(user => {
 
-        if(user.id != authUser.id)
-          chatStatus.className = 'chatStatus online';
+        //si el que se esta uniendo es distinto al identificado
+        if(user.id != authUser.id){
+          //esta conectado entonces el cambiamos la clase
+           chatStatus.className = 'chatStatus online';
+        }
 
       })
+      //cuando un usuario sale
       .leaving(user => {
-
+        //si el que se esta saliendo es distinto al identificado
         if(user.id != authUser.id)
+        //esta conectado entonces el cambiamos la clase
           chatStatus.className = 'chatStatus offline';
-
       })
-      .listenForWhisper('typing', e => {
+      //escucha los susurros en este caso el de typing
+      .listenForWhisper('typing', event => {
 
-        if(e > 0)
+        //si es mayor a 0 muestra el mensaje de escribiendo
+        if(event > 0){ 
+           //cambiamos el style
           typing.style.display = '';
+        }
 
+        //si esta escribiendo
         if(typingTimer){
+          //limpiamos el contador
           clearTimeout(typingTimer);
         }
 
+        //pasado los 3 segundos
         typingTimer = setTimeout( () => {
-
+          //cambiamos el style de escribiendo
           typing.style.display = 'none';
-
+          //no esta escribiendo
           typingTimer = false;
-
         }, 3000);
 
       });
@@ -99,6 +114,9 @@ window.onload = function () {
 
 }
 
+/**
+ * cuando el formulario se envia
+ */
 msgerForm.addEventListener("submit", event => {
 
   event.preventDefault();
@@ -132,14 +150,19 @@ msgerForm.addEventListener("submit", event => {
   msgerInput.value = "";
 });
 
+/**
+ * Agrega los mensajes de manera recursiva
+ * @param {*} messages 
+ */
 function appendMessages(messages)
 {
   let side = 'left';
 
   messages.forEach(message => {
 
+    //Si el usuario autenticado es igual al usuario del mensaje mostramos a la derecha
     side = (message.user_id == authUser.id) ? 'right' : 'left';
-
+    //Agregamos el mensaje
     appendMessage(
       message.user.name,
       PERSON_IMG,
@@ -151,6 +174,15 @@ function appendMessages(messages)
   })
 }
 
+/**
+ * Agrega los mensajes
+ * 
+ * @param {*} name 
+ * @param {*} img 
+ * @param {*} side 
+ * @param {*} text 
+ * @param {*} date 
+ */
 function appendMessage(name, img, side, text, date) {
 
   //   Simple solution for small apps
@@ -169,15 +201,21 @@ function appendMessage(name, img, side, text, date) {
 
   msgerChat.insertAdjacentHTML("beforeend", msgHTML);
 
+  //scroll
   scrollToBottom();
 }
 
+/**
+ * Se une al canal actual
+ * 
+ */
 function sendTypingEvent()
 {
-
+  //esta escribiendo
   typingTimer = true;
 
   Echo.join(`chat.${chatId}`)
+  //metodo susurro que se le pasa el nombre del evento y el criterio
     .whisper('typing', msgerInput.value.length);
 
 }
@@ -200,7 +238,11 @@ function sendTypingEvent()
     
   }
 
+  /**
+   * Scroll de la ventana
+   */
   function scrollToBottom()
   {
+    //hacemos que sea igual al tamaño de la ventana
     msgerChat.scrollTop = msgerChat.scrollHeight;
   }
